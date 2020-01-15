@@ -1,0 +1,17 @@
+FROM gcc:latest
+RUN apt-get update && \
+	apt-get -y install make git unzip build-essential autoconf libtool
+RUN git clone https://github.com/google/protobuf.git && \
+	cd protobuf && \
+	./autogen.sh && \
+	./configure && \
+	make && \
+	make install && \
+	ldconfig && \
+	make clean && \
+	cd .. && \
+	rm -r protobuf
+COPY multiplexer.cpp swargam.proto Makefile /multiplexer/
+WORKDIR /multiplexer/
+RUN make multiplexer
+ENTRYPOINT ["./multiplexer"]

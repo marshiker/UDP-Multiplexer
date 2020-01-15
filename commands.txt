@@ -1,0 +1,49 @@
+#build images
+./build_images.sh
+#does below
+#docker build -t receiver-1.0 -f Dockerfile-receiver .
+#docker build -t sender-1.0 -f Dockerfile-sender .
+#docker build -t multiplexer-1.0 -f Dockerfile-multiplexer .
+
+#create network
+./create_network.sh
+#does below
+#docker network create --driver=bridge --subnet=192.168.0.0/16 swargam
+
+#run
+./start_containers.sh
+#does below
+#better run docker ps -a and docker container prune -f if wanting to rerun these programs from scratch
+#docker run --net swargam --ip 192.168.10.12 --name multiplexer -d multiplexer-1.0 192.168.10.12 33676 33776 3 192.168.9.10:37865 192.168.9.11:37654 192.168.10.15:28976 192.168.11.155:48763 1048576
+#docker run --net swargam --ip 192.168.11.155 --name receiver -d receiver-1.0 192.168.11.155 48763 192.168.10.12:33776 1048576
+#docker run --net swargam --ip 192.168.9.10 --name sender1 -d sender-1.0 A 10 192.168.9.10 37865 192.168.10.12:33676 53248
+#docker run --net swargam --ip 192.168.9.11 --name sender2 -d sender-1.0 B 20 192.168.9.11 37654 192.168.10.12:33676 53248
+#docker run --net swargam --ip 192.168.10.15 --name sender3 -d sender-1.0 C 30 192.168.10.15 28976 192.168.10.12:33676 53248
+
+#logs - run one of below on one terminal window each
+docker logs -f multiplexer
+docker logs -f sender1
+docker logs -f sender2
+docker logs -f sender3
+docker logs -f receiver
+
+#stop
+./stop_containers.sh
+#does below
+#docker stop multiplexer
+#docker stop sender1
+#docker stop sender2
+#docker stop sender3
+#docker stop receiver
+#docker ps -a
+#docker container prune -f
+
+#remove network after all containers fully stopped
+./delete_network.sh
+#does below
+#docker network rm swargam
+
+#remove images
+run "docker images" and then on each unwanted
+docker rmi -f <image-id>
+

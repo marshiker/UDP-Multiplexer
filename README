@@ -1,0 +1,37 @@
+#to build
+./build_images.sh
+
+#create network
+./create_network.sh
+
+#start containers - senders, receiver, multiplexer
+./start_containers.sh
+
+#stop containers
+./stop_containers.sh
+
+#delete network
+./delete_network.sh
+
+#logs - run one of below on one terminal window each
+docker logs -f multiplexer
+docker logs -f sender1
+docker logs -f sender2
+docker logs -f sender3
+docker logs -f receiver
+
+Things to IMPROVE/CONSIDER:
+Opeational:
+- all these containers can be composed into one docker-compose file and easy to build/start/stop
+- config file is better as multiplexer ended up having too many options on docker run
+
+Performance/Features to have:
+- Separate thread for sending in multiplexer - so that the receiver thread can have more throughput, I separated into two different
+sockets for receving and sending so its easy to scale using another thread if required
+- Lockless queue between the receiver and sending threads if implemented above
+- Buffer sizes - I put the sender buffer sizes to 1/4th of multiplexer and final receiver buffer sizes to prevent dropping of packets
+- sleep - for senders I added small delay in microseconds so as not to outrun the receiver buffers..this is not accurate but can be used
+based on network speed and buffer sizes, performance of multiplexer and receiver etc.
+- Google protocol buffers - for arbitrary and non trivial messages, protocol buffers can be used to serialize and deserialize over the network in binary
+- Duplicate detection - there may be duplicate packets in udp although should not in this test as its in same subnet
+- out of order packets - in udp they can come out of order although shouldn't in this test case on same subnet 

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package swargam;
+
+message SenderMsg {
+	uint64 s_seqNum=1;
+	string name=2;
+}
+	
+message MultiplexerMsg {
+	uint64 m_SeqNum=1;
+	uint64 s_seqNum=2;
+	string name=3;
+}
